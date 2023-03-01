@@ -287,7 +287,9 @@ export class Trade {
         throw error
       }
       // we have arrived at the output token, so this is the final trade of one of the paths
+      // 找到了输出路径
       if (amountOut.token.equals(tokenOut)) {
+        // 插入排序, 存入到bestTrades中
         sortedInsert(
           bestTrades,
           new Trade(
