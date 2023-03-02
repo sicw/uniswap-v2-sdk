@@ -55,12 +55,14 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
   invariant(items.length <= maxSize, 'ITEMS_SIZE')
 
   // short circuit first item add
+  // 第一项trade 添加
   if (items.length === 0) {
     items.push(add)
     return null
   } else {
     const isFull = items.length === maxSize
     // short circuit if full and the additional item does not come before the last item
+    // todo 这里计算反了吧 小于0 是不是要items[items.length - 1]
     if (isFull && comparator(items[items.length - 1], add) <= 0) {
       return add
     }
@@ -76,7 +78,9 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
         hi = mid
       }
     }
+    // 插入add Trade
     items.splice(lo, 0, add)
+    // 最终只返回最'合适'的Trade
     return isFull ? items.pop()! : null
   }
 }

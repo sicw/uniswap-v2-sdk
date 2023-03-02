@@ -33,22 +33,29 @@ interface InputOutput {
 
 // comparator function that allows sorting trades by their output amounts, in decreasing order, and then input amounts
 // in increasing order. i.e. the best trades have the most outputs for the least inputs and are sorted first
+// 比较两个trade交易路径哪个更合适
 export function inputOutputComparator(a: InputOutput, b: InputOutput): number {
   // must have same input and output token for comparison
   invariant(currencyEquals(a.inputAmount.currency, b.inputAmount.currency), 'INPUT_CURRENCY')
   invariant(currencyEquals(a.outputAmount.currency, b.outputAmount.currency), 'OUTPUT_CURRENCY')
+  // 输出token数量一致 输入可能一致也可能不一致
   if (a.outputAmount.equalTo(b.outputAmount)) {
+    // 输入token数量一致
     if (a.inputAmount.equalTo(b.inputAmount)) {
       return 0
     }
     // trade A requires less input than trade B, so A should come first
     if (a.inputAmount.lessThan(b.inputAmount)) {
+      // tradeA输入数量小于tradeB tradeA合适
       return -1
     } else {
+      // tradeA输入数量大于tradeB tradeB合适
       return 1
     }
+    // 输出token不一致 输入token肯定一致
   } else {
     // tradeA has less output than trade B, so should come second
+    // tradeA输出数量小于tradeB tradeB合适
     if (a.outputAmount.lessThan(b.outputAmount)) {
       return 1
     } else {
@@ -65,6 +72,7 @@ export function tradeComparator(a: Trade, b: Trade) {
   }
 
   // consider lowest slippage next, since these are less likely to fail
+  // todo 最小滑点?
   if (a.priceImpact.lessThan(b.priceImpact)) {
     return -1
   } else if (a.priceImpact.greaterThan(b.priceImpact)) {
@@ -72,6 +80,7 @@ export function tradeComparator(a: Trade, b: Trade) {
   }
 
   // finally consider the number of hops since each hop costs gas
+  // 最终考虑路径短的
   return a.route.path.length - b.route.path.length
 }
 
