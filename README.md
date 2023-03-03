@@ -5,5 +5,6 @@
 
 ## 发布新sdk包到npmjs上
 1. npm run build 打包
-2. npm login 或 npm login --registry registry.npmjs.org  登陆npmjs
-3. npm publish 或 npm publish --registry registry.npmjs.org
+2. npm set registry https://registry.npmjs.org/          更改回原来的repo
+3. npm login 或 npm login --registry registry.npmjs.org  登陆npmjs
+4. npm publish 或 npm publish --registry registry.npmjs.org

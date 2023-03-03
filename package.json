@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist","src"
+    "dist",
+    "src"
   ],
   "repository": "https://github.com/Uniswap/uniswap-sdk.git",
   "keywords": [
