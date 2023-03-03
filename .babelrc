@@ -1,3 +1,14 @@
 {
-  "plugins": [] // "transform-jsbi-to-bigint"
+  "env": {
+    "test": {
+      "presets": ["@babel/preset-env","@babel/preset-react","@babel/preset-typescript"],
+      "plugins": [
+        "transform-export-extensions"
+      ],
+      "only": [
+        "*",
+        "node_modules/jest-runtime"
+      ]
+    }
+  }
 }
