@@ -278,6 +278,7 @@ export class Trade {
 
       let amountOut: TokenAmount
       try {
+        // 数组解构取值
         ;[amountOut] = pair.getOutputAmount(amountIn)
       } catch (error) {
         // input too low
@@ -297,20 +298,22 @@ export class Trade {
             originalAmountIn,
             TradeType.EXACT_INPUT
           ),
-          maxNumResults,
+          maxNumResults,  // 最多从几个Trade中选
           tradeComparator
         )
+        // tokenOut不是最终的目标token
       } else if (maxHops > 1 && pairs.length > 1) {
+        // 排除当前Pair
         const pairsExcludingThisPair = pairs.slice(0, i).concat(pairs.slice(i + 1, pairs.length))
 
         // otherwise, consider all the other paths that lead from this token as long as we have not exceeded maxHops
         Trade.bestTradeExactIn(
           pairsExcludingThisPair,
-          amountOut,
-          currencyOut,
+          amountOut,    // 当前Pair的output, 做为下一个Pair的input
+          currencyOut,  // 输出token
           {
             maxNumResults,
-            maxHops: maxHops - 1
+            maxHops: maxHops - 1  // 最大路径长度-1
           },
           [...currentPairs, pair],
           originalAmountIn,
