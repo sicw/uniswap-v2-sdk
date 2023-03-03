@@ -1,12 +1,11 @@
 {
   "name": "@sicwen/uniswap-sdk-bsctestnet",
   "license": "MIT",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "🛠 An SDK for building applications on top of Uniswap.",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "src/index.js",
+  "typings": "src/index.d.ts",
   "files": [
-    "dist",
     "src"
   ],
   "repository": "https://github.com/Uniswap/uniswap-sdk.git",
