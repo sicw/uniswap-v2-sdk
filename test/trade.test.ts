@@ -89,20 +89,30 @@ describe('Trade', () => {
       expect(result).toHaveLength(2)
       expect(result[0].route.pairs).toHaveLength(1) // 0 -> 2 at 10:11
       expect(result[0].route.path).toEqual([token0, token2])
+      // (100 * 997 * 1100) / (1000 * 1000 + 100 * 997) = 99.727
       expect(result[0].inputAmount).toEqual(new TokenAmount(token0, JSBI.BigInt(100)))
       expect(result[0].outputAmount).toEqual(new TokenAmount(token2, JSBI.BigInt(99)))
       expect(result[1].route.pairs).toHaveLength(2) // 0 -> 1 -> 2 at 12:12:10
       expect(result[1].route.path).toEqual([token0, token1, token2])
       expect(result[1].inputAmount).toEqual(new TokenAmount(token0, JSBI.BigInt(100)))
+      // pair token0 <-> token1 token0: 1000 token1:1000
+      // token0 -> token1 => (100 * 997 * 1000) / (1000 * 1000 + 100 * 997) => 90 output token1
+      // token0: 1100 token1:910
+
+      // pair token1 <-> pair2 token1: 1200 token2: 1000
+      // token1 -> token2 => (90 * 997 * 1000) / (1200 * 1000 + 90 * 997) => 69 output token2
+      // token1: 1290 token2: 841
       expect(result[1].outputAmount).toEqual(new TokenAmount(token2, JSBI.BigInt(69)))
     })
 
+    // 没有流动性不报错
     it('doesnt throw for zero liquidity pairs', () => {
       expect(Trade.bestTradeExactIn([empty_pair_0_1], new TokenAmount(token0, JSBI.BigInt(100)), token1)).toHaveLength(
         0
       )
     })
 
+    // 该交易只允许一跳
     it('respects maxHops', () => {
       const result = Trade.bestTradeExactIn(
         [pair_0_1, pair_0_2, pair_1_2],
@@ -115,6 +125,7 @@ describe('Trade', () => {
       expect(result[0].route.path).toEqual([token0, token2])
     })
 
+    // input太少了 output=0 不需要报错继续找下一个Trade
     it('insufficient input for one pair', () => {
       const result = Trade.bestTradeExactIn(
         [pair_0_1, pair_0_2, pair_1_2],
@@ -127,6 +138,7 @@ describe('Trade', () => {
       expect(result[0].outputAmount).toEqual(new TokenAmount(token2, JSBI.BigInt(1)))
     })
 
+    // 最多返回几个找到的Trade
     it('respects n', () => {
       const result = Trade.bestTradeExactIn(
         [pair_0_1, pair_0_2, pair_1_2],
@@ -138,6 +150,7 @@ describe('Trade', () => {
       expect(result).toHaveLength(1)
     })
 
+    // 没有匹配的pair
     it('no path', () => {
       const result = Trade.bestTradeExactIn(
         [pair_0_1, pair_0_3, pair_1_3],
@@ -153,6 +166,9 @@ describe('Trade', () => {
         CurrencyAmount.ether(JSBI.BigInt(100)),
         token3
       )
+      // 有两个路径
+      // 1. weth -> 0 -> 3
+      // 2. weth -> 0 -> 1 -> 3
       expect(result).toHaveLength(2)
       expect(result[0].inputAmount.currency).toEqual(ETHER)
       expect(result[0].route.path).toEqual([WETH[ChainId.MAINNET], token0, token1, token3])

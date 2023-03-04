@@ -64,7 +64,10 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
     // short circuit if full and the additional item does not come before the last item
     // todo 这里计算反了吧 小于0 是不是要items[items.length - 1]
     if (isFull && comparator(items[items.length - 1], add) <= 0) {
+      // items中的更好, 所以这里直接返回
       return add
+
+      // add更合适, 在下面会将add加入到items中. 并在return时将原items中最后一个pop掉
     }
 
     let lo = 0,
@@ -80,7 +83,7 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
     }
     // 插入add Trade
     items.splice(lo, 0, add)
-    // 最终只返回最'合适'的Trade
+    // isFull判断见上面的return add解释
     return isFull ? items.pop()! : null
   }
 }

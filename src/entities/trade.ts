@@ -283,6 +283,7 @@ export class Trade {
       const pair = pairs[i]
       // pair irrelevant
       if (!pair.token0.equals(amountIn.token) && !pair.token1.equals(amountIn.token)) continue
+      // 允许pair中token数量为0
       if (pair.reserve0.equalTo(ZERO) || pair.reserve1.equalTo(ZERO)) continue
 
       let amountOut: TokenAmount
@@ -291,6 +292,7 @@ export class Trade {
         ;[amountOut] = pair.getOutputAmount(amountIn)
       } catch (error) {
         // input too low
+        // output = 0 没关系, 继续找下一个Trade
         if (error.isInsufficientInputAmountError) {
           continue
         }
@@ -311,6 +313,7 @@ export class Trade {
           tradeComparator
         )
         // tokenOut不是最终的目标token
+        // maxHops包含的最大跳数, token0 -> token2是一跳  token0 -> token1 -> token2是两跳
       } else if (maxHops > 1 && pairs.length > 1) {
         // 排除当前Pair
         const pairsExcludingThisPair = pairs.slice(0, i).concat(pairs.slice(i + 1, pairs.length))
